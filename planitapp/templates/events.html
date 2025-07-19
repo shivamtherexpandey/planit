@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan.IT | Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            background-image: url("{% static 'image/bg2.jpg' %}");
+            background-size: 100% 875px;
+            background-repeat: no-repeat;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .card {
+            transition: background-color 0.3s ease;
+        }
+
+
+        .card-custom:hover {
+            border: 1px solid #d2d6d6;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card-body {
+            color: #f1f1f1e3;
+        }
+
+        .pagination .page-link {
+            color: #f1f1f1e3;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .modal-content {
+            background-color: #fff;
+            color: #333;
+        }
+        .container.py-4 {
+            padding-bottom: 2rem;
+        }
+
+        .page-link[aria-disabled="true"] {
+            cursor: default;
+            color: #6c757d;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dark-shade"></div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand h3 head mx-3" style="color: #ffffff;" href="{% url 'home_page' %}">Plan<span class='dot'>.</span>IT</a>
+            <div class="d-flex" style="margin-right:20px;">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-lg" aria-current="page" href="{% url 'home_page' %}"
+                            style="color: #d2d6d6;">Home</a>
+                    </li>
+                    <li class="nav-item" style="margin-right:50px;">
+                        <a class="nav-link nav-link-lg active-lg" href="#" style="color: #dee2e6;"><strong>Show
+                                Events</strong></a>
+                    </li>
+                </ul>
+                <img src="{{ user_profile_img }}" alt="Profile Image" class="rounded-circle" id="profileImage"
+                    data-bs-toggle="offcanvas" data-bs-target="#profileCanvas" aria-controls="profileCanvas"
+                    style="width: 40px; height: 40px;">
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show message" role="alert"
+            style="position: fixed;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileCanvas" aria-labelledby="profileCanvasLabel">
+        <div class="offcanvas-header">
+            <h5 id="profileCanvasLabel">Profile</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="text-center">
+                <img src="{{ user_profile_img }}" alt="Profile Image" class="rounded-circle mb-3"
+                    style="width: 100px; height: 100px;">
+                <p>You are logged in as</p>
+                <p class="user-email"><strong>{{ user_email }}</strong></p>
+                <button class="btn btn-danger" onclick="window.location.href='{% url 'google_logout' %}'"
+                    id="logoutButton">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-image">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center text-center">
+                <div class="col">
+                    <h1 class="head">Saved Events</h1>
+                    <p style="color: #f1f1f1e3;">All your Saved Events from Google Sheets</p>
+                </div>
+            </div>
+
+            <div class="row" style="margin-inline:25%;">
+                <div class="col">
+                    <div class="row row-cols-1 g-4 justify-content-center align-items-center text-center">
+                        {% for event in page_content %}
+                        <div class="col">
+                            <div class="card card-custom bg-transparent h-100" style="border-radius: 15px;"
+                                data-bs-toggle="modal" data-bs-target="#eventModal{{ forloop.counter }}"
+                                data-title="{{ event.1 }}" data-description="{{ event.2 }}" data-start="{{ event.3 }}"
+                                data-end="{{ event.4 }}">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title">{{ event.1 }}</h5>
+                                    <p class="card-text">Start: {{ event.3|date:"M d, Y H:i" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-2">
+                <div class="col">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% for i in pages %}
+                            <li class="page-item{% if current_page == i %} active{% endif %}">
+                                <a class="page-link" style="color:black;" {% if current_page == i %} aria-disabled="true" {% endif %} href="{{ i }}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    {% for event in page_content %}
+    <div class="modal fade" id="eventModal{{ forloop.counter }}" tabindex="-1" aria-labelledby="eventModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">{{ event.1 }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>Description:</h5>
+                    <p>{{ event.2 }}</p>
+                    <p><strong>Start:</strong> {{ event.3|date:"M d, Y H:i" }}</p>
+                    <p><strong>End:</strong> {{ event.4|date:"M d, Y H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Typed('#typed', {
+                strings: ["Let's Plan<span class='dot'>.</span>IT !"],
+                typeSpeed: 50,
+                backSpeed: 25,
+                startDelay: 500,
+                loop: false,
+                showCursor: true,
+                cursorChar: '|',
+                autoInsertCss: true,
+                contentType: 'html',
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const eventStartInput = document.getElementById('eventStart');
+            const eventEndInput = document.getElementById('eventEnd');
+
+            function setMinStartDateTime() {
+                const now = new Date();
+                // Convert current time to Asia/Kolkata timezone
+                const asiaKolkataTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+                // Convert to YYYY-MM-DDTHH:MM format for datetime-local input
+                const localDateTimeFormat = formatDateToInput(asiaKolkataTime);
+                eventStartInput.min = localDateTimeFormat;
+            }
+
+            function setDefaultEndDateTime() {
+                const eventStartValue = eventStartInput.value;
+                if (eventStartValue) {
+                    const eventStart = new Date(eventStartValue);
+                    // Convert event start time to Asia/Kolkata timezone
+                    const asiaKolkataStartTime = new Date(eventStart.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+                    // Add 1 hour in Asia/Kolkata timezone
+                    const asiaKolkataEndTime = new Date(asiaKolkataStartTime.getTime() + 60 * 60 * 1000);
+                    eventEndInput.min = formatDateToInput(asiaKolkataEndTime);
+                    eventEndInput.value = formatDateToInput(asiaKolkataEndTime);
+                }
+            }
+            // Helper function to format dates to YYYY-MM-DDTHH:MM
+            function formatDateToInput(date) {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            setMinStartDateTime();
+            eventStartInput.addEventListener('change', setDefaultEndDateTime);
+
+            const createButton = document.getElementById('createButton');
+            createButton.addEventListener('click', function () {
+                // Close the modal
+                const createEventModal = document.getElementById('createEventModal');
+                const modal = bootstrap.Modal.getInstance(createEventModal);
+                modal.hide();
+
+                // Disable further response from the user
+                createButton.disabled = true;
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>

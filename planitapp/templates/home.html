@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan.IT | Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            background-image: url("{% static 'image/bg2.jpg' %}");
+            background-size: 100% 875px;
+            background-repeat: no-repeat;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dark-shade"></div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand h3 head mx-3" style="color: #ffffff;" href="#">Plan<span class='dot'>.</span>IT</a>
+            <div class="d-flex" style="margin-right:20px;">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-lg active-lg" aria-current="page" href="#"
+                            style="color: #dee2e6;"><strong>Home</strong></a>
+                    </li>
+                    <li class="nav-item" style="margin-right:50px;">
+                        <a class="nav-link nav-link-lg" href="{% url 'list_events_page' page=1 %}" style="color: #d2d6d6;">Show Events</a>
+                    </li>
+                </ul>
+                <img src="{{ user_profile_img }}" alt="Profile Image" class="rounded-circle" id="profileImage"
+                    data-bs-toggle="offcanvas" data-bs-target="#profileCanvas" aria-controls="profileCanvas"
+                    style="width: 40px; height: 40px;">
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show message" role="alert"
+            style="position: fixed;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileCanvas" aria-labelledby="profileCanvasLabel">
+        <div class="offcanvas-header">
+            <h5 id="profileCanvasLabel">Profile</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="text-center">
+                <img src="{{ user_profile_img }}" alt="Profile Image" class="rounded-circle mb-3"
+                    style="width: 100px; height: 100px;">
+                <p>You are logged in as</p>
+                <p class="user-email"><strong>{{ user_email }}</strong></p>
+                <button class="btn btn-danger" onclick="window.location.href='{% url "google_logout" %}'"
+                    id="logoutButton">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-image" style="height: 260px;">
+        <div class="container h-100 d-flex justify-content-center align-items-center">
+            <div class="text-center" style="margin-top: 200px">
+                <h1 class="head" id="typed"></h1>
+                <p style="color: #f1f1f1e3;">Effortlessly Create and Showcase your Google Calendar events with Plan.IT.
+                <div class="d-flex align-items-center justify-content-center" style="margin: 25px;">
+                    <div class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="modal"
+                        data-bs-target="#createEventModal">
+                        Create Event
+                        <span class="material-symbols-outlined ms-2">send</span>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createEventModalLabel">Create Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{% url 'create_event' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <!-- Event Title Field -->
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" name="eventTitle" required>
+                        </div>
+                        <!-- Description Field -->
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" name="eventDescription" rows="3"
+                                style="resize: none;"></textarea>
+                        </div>
+                        <!-- Event Start Field -->
+                        <div class="mb-3">
+                            <label for="eventStart" class="form-label">Event Start</label>
+                            <input type="datetime-local" class="form-control" id="eventStart" name="eventStart"
+                                min="<?= date('Y-m-d\TH:i'); ?>" required>
+                        </div>
+                        <!-- Event End Field -->
+                        <div class="mb-3">
+                            <label for="eventEnd" class="form-label">Event End</label>
+                            <input type="datetime-local" class="form-control" id="eventEnd" name="eventEnd" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Create and Cancel Buttons -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"  class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Typed('#typed', {
+                strings: ["Let's Plan<span class='dot'>.</span>IT !"],
+                typeSpeed: 50,
+                backSpeed: 25,
+                startDelay: 500,
+                loop: false,
+                showCursor: true,
+                cursorChar: '|',
+                autoInsertCss: true,
+                contentType: 'html',
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const eventStartInput = document.getElementById('eventStart');
+            const eventEndInput = document.getElementById('eventEnd');
+
+            function setMinStartDateTime() {
+                const now = new Date();
+                // Convert current time to Asia/Kolkata timezone
+                const asiaKolkataTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+                // Convert to YYYY-MM-DDTHH:MM format for datetime-local input
+                const localDateTimeFormat = formatDateToInput(asiaKolkataTime);
+                eventStartInput.min = localDateTimeFormat;
+            }
+
+            function setDefaultEndDateTime() {
+                const eventStartValue = eventStartInput.value;
+                if (eventStartValue) {
+                    const eventStart = new Date(eventStartValue);
+                    // Convert event start time to Asia/Kolkata timezone
+                    const asiaKolkataStartTime = new Date(eventStart.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+                    // Add 1 hour in Asia/Kolkata timezone
+                    const asiaKolkataEndTime = new Date(asiaKolkataStartTime.getTime() + 60 * 60 * 1000);
+                    eventEndInput.min = formatDateToInput(asiaKolkataEndTime);
+                    eventEndInput.value = formatDateToInput(asiaKolkataEndTime);
+                }
+            }
+            // Helper function to format dates to YYYY-MM-DDTHH:MM
+            function formatDateToInput(date) {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            setMinStartDateTime();
+            eventStartInput.addEventListener('change', setDefaultEndDateTime);
+
+        });
+
+
+    </script>
+</body>
+
+</html>
