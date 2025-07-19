@@ -80,7 +80,7 @@
 
 ---
 
-## Recruiter-Focused Highlights
+## Highlights
 
 - **Modern Django Patterns**: The application leverages class-based views, mixins, and the ORM for clean, maintainable code.
 - **API Integration**: Demonstrates advanced skills in integrating with OAuth2 and Google APIs.
